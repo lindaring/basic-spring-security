@@ -16,10 +16,10 @@ public class BasicSpringSecurityTest {
 
   @Test
   public void bcryptGenerate() {
-      String password = "password";
+      String password = "pass";
       BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(5);
       String hashedPassword = passwordEncoder.encode(password);
-      System.out.println(hashedPassword);
+      System.out.println(password + " " + hashedPassword);
   }
 
 }
