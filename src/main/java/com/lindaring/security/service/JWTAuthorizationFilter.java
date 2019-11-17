@@ -31,7 +31,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-    String header = getHeadersInfo(request).get("authorization");
+    String header = getHeadersInfo(request, "authorization");
     if (header == null || !header.startsWith(TOKEN_PREFIX)) {
       chain.doFilter(request, response);
       return;
@@ -41,22 +41,21 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     chain.doFilter(request, response);
   }
 
-  private Map<String, String> getHeadersInfo(HttpServletRequest request) {
-
-    Map<String, String> map = new HashMap<String, String>();
-
+  private String getHeadersInfo(HttpServletRequest request, String searchKey) {
     Enumeration headerNames = request.getHeaderNames();
+
     while (headerNames.hasMoreElements()) {
       String key = (String) headerNames.nextElement();
-      String value = request.getHeader(key);
-      map.put(key, value);
+      if (key.equalsIgnoreCase(searchKey)) {
+        return request.getHeader(key);
+      }
     }
 
-    return map;
+    return null;
   }
 
   private UsernamePasswordAuthenticationToken getAuthenticationToken(HttpServletRequest request) {
-    String token = getHeadersInfo(request).get("authorization");
+    String token = getHeadersInfo(request, "authorization");
     if (token == null) return null;
     String username = Jwts.parser().setSigningKey(SECRET)
             .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
